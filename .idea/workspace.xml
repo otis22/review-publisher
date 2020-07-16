@@ -20,13 +20,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="74b28e9c-28f1-4b16-9101-efeee08733b9" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/review/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/review/gitlab.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test_gitlab.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/review-publisher.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/review-publisher.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Procfile" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,5 +70,11 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="663" y="355" width="583" height="403" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1594924522472">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="663" y="355" width="583" height="403" key="#com.intellij.fileTypes.FileTypeChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1594924522472" />
   </component>
 </project>
