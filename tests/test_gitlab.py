@@ -4,8 +4,6 @@ from review.gitlab import get_commits_url, get_query_params, \
     commit_url, set_url_to_commits
 
 
-
-
 class GitlabCase(unittest.TestCase):
 
     def test_get_commits_url(self):
@@ -18,7 +16,7 @@ class GitlabCase(unittest.TestCase):
             "00:00:00" in get_query_params("develop")['since']
         )
 
-    def test_query_string_since(self):
+    def test_query_ref_name(self):
         self.assertTrue(
             "develop" == get_query_params("develop")['ref_name']
         )
@@ -36,19 +34,38 @@ class GitlabCase(unittest.TestCase):
 
     def test_get_commits(self):
         fakedata = [
-            {'id': '61f139a14c4faea2450ee6729c106956a38b2cf2', 'short_id': '61f139a1',
-             'created_at': '2020-07-16T14:29:25.000Z', 'parent_ids': ['c027292c4625ec12bade975cfee08bbf476cefc1'],
-             'title': 'TR-8125 Отображаются не все позиции во вкладке Mинимальный остаток',
-             'message': 'TR-8125 Отображаются не все позиции во вкладке Mинимальный остаток\n',
-             'author_name': 'TT', 'author_email': 'gg@gmail.com',
-             'authored_date': '2020-07-16T14:29:25.000Z', 'committer_name': 'TT',
-             'committer_email': 'gg@gmail.com', 'committed_date': '2020-07-16T14:29:25.000Z'},
-            {'id': 'c027292c4625ec12bade975cfee08bbf476cefc1', 'short_id': 'c027292c',
-             'created_at': '2020-07-16T14:08:26.000Z', 'parent_ids': ['d5a70bcb6e6d8a8845beb11149f16ad92bec9d68'],
-             'title': 'review', 'message': 'review\n', 'author_name': 'GT',
-             'author_email': 'yy@gmail.com', 'authored_date': '2020-07-16T14:08:26.000Z',
-             'committer_name': 'FF', 'committer_email': 'gg@gmail.com',
-             'committed_date': '2020-07-16T14:08:26.000Z'}
+            {
+                "id": "id1",
+                "short_id": "61f139a1",
+                "created_at": "2020-07-16T14:29:25.000Z",
+                "parent_ids": [
+                    "c027292c4625ec12bade975cfee08bbf476cefc1"
+                ],
+                "title": "TR-8125 Отображаются не все",
+                "message": "TR-8125 Отображаются не все",
+                "author_name": "TT",
+                "author_email": "gg@gmail.com",
+                "authored_date": "2020-07-16T14:29:25.000Z",
+                "committer_name": "TT",
+                "committer_email": "gg@gmail.com",
+                "committed_date": "2020-07-16T14:29:25.000Z"
+            },
+            {
+                "id": "id2",
+                "short_id": "c027292c",
+                "created_at": "2020-07-16T14:08:26.000Z",
+                "parent_ids": [
+                    "d5a70bcb6e6d8a8845beb11149f16ad92bec9d68"
+                ],
+                "title": "review",
+                "message": "review\n",
+                "author_name": "GT",
+                "author_email": "yy@gmail.com",
+                "authored_date": "2020-07-16T14:08:26.000Z",
+                "committer_name": "FF",
+                "committer_email": "gg@gmail.com",
+                "committed_date": "2020-07-16T14:08:26.000Z"
+            }
         ]
 
         def fakerequest(method, url, params):
@@ -63,13 +80,25 @@ class GitlabCase(unittest.TestCase):
             request=fakerequest
         )
         self.assertTrue(
-            commits['61f139a14c4faea2450ee6729c106956a38b2cf2']['title'] == 'TR-8125 Отображаются не все позиции во вкладке Mинимальный остаток'
+            commits['id1']['title'] == 'TR-8125 Отображаются не все'
         )
 
-    def test_commit_url(self):
+    def test_commit_url_has_url(self):
         self.assertTrue(
-            "https://fake.url" in commit_url('https://fake.url', 'path/repo', 'idcommit')
-            and "idcommit" in commit_url('https://fake.url', 'path/repo', 'idcommit')
+            "https://fake.url" in commit_url(
+                'https://fake.url',
+                'path/repo',
+                'idcommit'
+            )
+        )
+
+    def test_commit_url_has_id_commit(self):
+        self.assertTrue(
+            "idcommit" in commit_url(
+                'https://fake.url',
+                'path/repo',
+                'idcommit'
+            )
         )
 
     def test_set_url_to_commits(self):

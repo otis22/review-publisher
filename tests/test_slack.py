@@ -21,7 +21,10 @@ class SlackCase(unittest.TestCase):
 
     def test_get_commits_payload(self):
         self.assertTrue(
-            "mychannel" == get_commits_payload("mychannel", self.fake_commits())['channel']
+            "mychannel" == get_commits_payload(
+                "mychannel",
+                self.fake_commits()
+            )['channel']
         )
 
 
