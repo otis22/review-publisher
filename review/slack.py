@@ -5,7 +5,7 @@ import json
 def get_commits_text(commits):
     return "\n".join(
         [
-            "{} | *{}* - {}({})".format(
+            "<{} | *{}* - {}({})>".format(
                 commits[k]['commit_url'], commits[k]['branch'], commits[k]['title'], commits[k]['author_name']
             ) for k in commits
         ]
