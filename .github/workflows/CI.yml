@@ -34,4 +34,4 @@ jobs:
         flake8 --count --show-source --statistics review tests
     - name: Tests with check coverage
       run: |
-        pytest --cov=review --cov-fail-under 90 tests/
+        pytest --cov=review --cov-fail-under 80 tests/
