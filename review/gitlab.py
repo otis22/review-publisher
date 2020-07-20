@@ -33,7 +33,7 @@ def get_query_params(ref_name):
 
 
 def get_commits(url, branches, request):
-    commits = {}
+    commits = []
     for branch in branches:
         response = request(
             method="GET",
@@ -41,11 +41,12 @@ def get_commits(url, branches, request):
             params=get_query_params(branch)
         )
         for commit in response.json():
-            commits[commit['id']] = {
+            commits.append({
                 "author_name": commit['author_name'],
                 "title": commit["title"],
-                "branch": "master"
-            }
+                "branch": branch,
+                "commit_id": commit['id']
+            })
     return commits
 
 
@@ -53,30 +54,40 @@ def commit_url(gitlab_url, project_path, commit_id):
     return gitlab_url + '/' + project_path + '/commit/' + commit_id
 
 
-def set_url_to_commits(commits, gitlab_url, project_path):
-    for commit_id in commits:
-        commits[commit_id]['commit_url'] = commit_url(
-            gitlab_url,
-            project_path,
-            commit_id
-        )
-    return commits
+def with_url(commit, gitlab_url, project_path):
+    commit['commit_url'] = commit_url(
+        gitlab_url,
+        project_path,
+        commit['commit_id']
+    )
+    return commit
+
+
+def valid_commit(commit, stop_words):
+    return all(map(lambda x: x not in commit['title'], stop_words))
 
 
 def commits_by(gitlab_url, private_token):
     request = api_request_creator(private_token)
+    stop_words = [
+        "Merge branch",
+        "Merge tag",
+        "Bumped new version"
+    ]
 
     def func_get_commits_by(project_id, project_path, branches):
-        return set_url_to_commits(
-            get_commits(
-                get_commits_url(
-                    gitlab_url,
-                    project_id
-                ),
-                branches,
-                request
-            ),
-            gitlab_url,
-            project_path
+        return filter(
+            lambda commit: valid_commit(commit, stop_words),
+            map(
+                lambda commit: with_url(commit, gitlab_url, project_path),
+                get_commits(
+                    get_commits_url(
+                        gitlab_url,
+                        project_id
+                    ),
+                    branches,
+                    request
+                )
+            )
         )
     return func_get_commits_by

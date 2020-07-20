@@ -1,7 +1,7 @@
 import unittest
 from review.gitlab import get_commits_url, get_query_params, \
     api_request_creator, commits_by, get_commits, \
-    commit_url, set_url_to_commits
+    commit_url, with_url, valid_commit
 
 
 class GitlabCase(unittest.TestCase):
@@ -80,7 +80,7 @@ class GitlabCase(unittest.TestCase):
             request=fakerequest
         )
         self.assertTrue(
-            commits['id1']['title'] == 'TR-8125 Отображаются не все'
+            commits[0]['title'] == 'TR-8125 Отображаются не все'
         )
 
     def test_commit_url_has_url(self):
@@ -101,17 +101,36 @@ class GitlabCase(unittest.TestCase):
             )
         )
 
-    def test_set_url_to_commits(self):
+    def test_commit_with_url(self):
         self.assertTrue(
-            "commit_url" in set_url_to_commits(
+            "commit_url" in with_url(
                 {
-                    "fakeidcommit": {
-                        "title": "some title"
-                    }
+                    "title": "some title",
+                    "commit_id": "fakeidcommit"
                 },
                 "https://fake.url",
                 "path/repo"
-            )["fakeidcommit"]
+            )
+        )
+
+    def test_valid_commit_is_vallid(self):
+        self.assertTrue(
+            valid_commit(
+                {
+                    "title": "some"
+                },
+                ['test']
+            )
+        )
+
+    def test_valid_commit_is_not_vallid(self):
+        self.assertFalse(
+            valid_commit(
+                {
+                    "title": "test"
+                },
+                ['test']
+            )
         )
 
 

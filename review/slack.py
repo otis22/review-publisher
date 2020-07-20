@@ -2,20 +2,16 @@ import requests
 import json
 
 
-def get_commits_text(commits):
-    return "\n".join(
-        [
-            "<{} | *{}* - {}({})>".format(
-                commits[k]['commit_url'],
-                commits[k]['branch'],
-                commits[k]['title'],
-                commits[k]['author_name']
-            ) for k in commits
-        ]
+def get_commit_text(commit):
+    return "<{} | *{}* - {}({})>".format(
+        commit['commit_url'],
+        commit['branch'],
+        commit['title'],
+        commit['author_name']
     )
 
 
-def get_commits_payload(channel, commits):
+def get_mrkdwn_payload(channel, text):
     return {
         "channel": channel,
         "username": "reviewbot",
@@ -24,7 +20,7 @@ def get_commits_payload(channel, commits):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "Review Time!!! \n " + get_commits_text(commits)
+                    "text": text
                 }
             }
         ],
@@ -32,11 +28,28 @@ def get_commits_payload(channel, commits):
     }
 
 
+def get_commit_payload(channel, commit):
+    return get_mrkdwn_payload(channel, get_commit_text(commit))
+
+
+def get_first_payload(channel):
+    return get_mrkdwn_payload(channel, "Review time!!!")
+
+
 def send_commits(commits, hook_url, channel):
-    print(json.dumps(get_commits_payload(channel, commits)))
+    responses = []
     response = requests.post(
         hook_url,
-        data=json.dumps(get_commits_payload(channel, commits)),
+        data=json.dumps(get_first_payload(channel)),
         headers={'Content-Type': "application/json"}
     )
-    return response.text
+    responses.append(response.text)
+    for commit in commits:
+        response = requests.post(
+            hook_url,
+            data=json.dumps(get_commit_payload(channel, commit)),
+            headers={'Content-Type': "application/json"}
+        )
+        responses.append(response.text)
+
+    return "\n".join(responses)
