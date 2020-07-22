@@ -133,6 +133,16 @@ class GitlabCase(unittest.TestCase):
             )
         )
 
+    def test_valid_commit_with_empty_list_vallid(self):
+        self.assertTrue(
+            valid_commit(
+                {
+                    "title": "test"
+                },
+                []
+            )
+        )
+
 
 if __name__ == '__main__':
     unittest.main()

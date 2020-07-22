@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
+
+[scripts]
+check = "bash -c \"flake8 --count --show-source --statistics review tests && pytest --cov=review --cov-fail-under 80 tests/\""
+unit = "pytest --cov=review --cov-fail-under 80 tests/"
+style = "flake8 --count --show-source --statistics review tests"

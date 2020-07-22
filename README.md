@@ -32,6 +32,4 @@ LOCAL=1 GITLAB_URL=u PRIVATE_TOKEN=k PROJECT_ID=1 PROJECT_PATH=r/p BRANCHES=mast
 
 pip install flake8 pytest pytest-cov
 
-flake8 --count --show-source --statistics review tests
-
-pytest --cov=review --cov-fail-under 80 tests/
+pipenv run check
