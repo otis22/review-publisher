@@ -20,7 +20,7 @@ LOCAL=1 GITLAB_URL=u PRIVATE_TOKEN=k PROJECT_ID=1 PROJECT_PATH=r/p BRANCHES=mast
 * BRANCHES=master,develop - branch for scan commits
 * SLACK_URL=u - slack hook url
 * SLACK_CHANNEL=#developers - slack chanel for message
-
+* COMMIT_TITLE_STOP_WORDS=Merge branch, Merge tag - is not required param for filter commits by title
 
 ## Start on heroku
 1. Clone or copy repo

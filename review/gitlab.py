@@ -67,13 +67,8 @@ def valid_commit(commit, stop_words):
     return all(map(lambda x: x not in commit['title'], stop_words))
 
 
-def commits_by(gitlab_url, private_token):
+def commits_by(gitlab_url: str, private_token: str, stop_words: list):
     request = api_request_creator(private_token)
-    stop_words = [
-        "Merge branch",
-        "Merge tag",
-        "Bumped new version"
-    ]
 
     def func_get_commits_by(project_id, project_path, branches):
         return filter(

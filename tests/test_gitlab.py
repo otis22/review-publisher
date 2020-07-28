@@ -29,7 +29,9 @@ class GitlabCase(unittest.TestCase):
     def test_commits_by(self):
 
         self.assertTrue(
-            "function" in str(type(commits_by("http://gitlab.com", "secret")))
+            "function" in str(
+                type(commits_by("http://gitlab.com", "secret", []))
+            )
         )
 
     def test_get_commits(self):
