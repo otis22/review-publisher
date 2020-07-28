@@ -1,6 +1,14 @@
 import os
 from review.gitlab import commits_by
 from review.slack import send_commits
+from review.schedule import Schedule
+from datetime import datetime
+
+
+def create_schedule_by_settings() -> Schedule:
+    hours = os.environ.get('SCHEDULE_HOURS', 15)
+    day_of_weeks = os.environ.get('SCHEDULE_DAY_OF_WEEKS', 'mon-fri')
+    return Schedule(day_of_weeks, hours)
 
 
 def send_commits_on_review():
@@ -23,11 +31,15 @@ def send_commits_on_review():
     slack_channel = os.environ.get("SLACK_CHANNEL")
     assert len(slack_url) > 0
     assert len(slack_channel) > 0
+
+    schedule = create_schedule_by_settings()
+
     response_text = send_commits(
         get_commits(
             project_id=project_id,
             branches=branches,
-            project_path=project_path
+            project_path=project_path,
+            since_date=schedule.since_date(datetime.now())
         ),
         slack_url,
         slack_channel

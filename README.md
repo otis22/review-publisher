@@ -21,6 +21,8 @@ LOCAL=1 GITLAB_URL=u PRIVATE_TOKEN=k PROJECT_ID=1 PROJECT_PATH=r/p BRANCHES=mast
 * SLACK_URL=u - slack hook url
 * SLACK_CHANNEL=#developers - slack chanel for message
 * COMMIT_TITLE_STOP_WORDS=Merge branch, Merge tag - is not required param for filter commits by title
+* SCHEDULE_HOURS - hours for start job, is not required param, 15 by default
+* SCHEDULE_DAY_OF_WEEKS - day of week for schedule, is not required param, 'mon-fri' by default, it param for scheduler.add_job(day_of_week=) 
 
 ## Start on heroku
 1. Clone or copy repo

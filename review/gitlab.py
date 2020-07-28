@@ -1,5 +1,5 @@
 import requests
-import datetime
+from datetime import datetime
 
 
 def get_commits_url(gitlab_url, project_id):
@@ -24,21 +24,20 @@ def api_request_creator(private_token):
     return gitlab_api_request
 
 
-def get_query_params(ref_name):
-    since_date = datetime.datetime.now()
+def get_query_params(ref_name: str, since_date: datetime):
     return {
         "ref_name": ref_name,
         "since": since_date.strftime("%Y-%m-%d 00:00:00")
     }
 
 
-def get_commits(url, branches, request):
+def get_commits(url, branches, request, since_date: datetime):
     commits = []
     for branch in branches:
         response = request(
             method="GET",
             url=url,
-            params=get_query_params(branch)
+            params=get_query_params(branch, since_date)
         )
         for commit in response.json():
             commits.append({
@@ -70,7 +69,7 @@ def valid_commit(commit, stop_words):
 def commits_by(gitlab_url: str, private_token: str, stop_words: list):
     request = api_request_creator(private_token)
 
-    def func_get_commits_by(project_id, project_path, branches):
+    def func_get_commits_by(project_id, project_path, branches, since_date):
         return filter(
             lambda commit: valid_commit(commit, stop_words),
             map(
@@ -81,7 +80,8 @@ def commits_by(gitlab_url: str, private_token: str, stop_words: list):
                         project_id
                     ),
                     branches,
-                    request
+                    request,
+                    since_date
                 )
             )
         )

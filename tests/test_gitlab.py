@@ -2,6 +2,7 @@ import unittest
 from review.gitlab import get_commits_url, get_query_params, \
     api_request_creator, commits_by, get_commits, \
     commit_url, with_url, valid_commit
+from datetime import datetime
 
 
 class GitlabCase(unittest.TestCase):
@@ -13,12 +14,16 @@ class GitlabCase(unittest.TestCase):
 
     def test_query_string_since(self):
         self.assertTrue(
-            "00:00:00" in get_query_params("develop")['since']
+            datetime.now().strftime('%Y-%m')
+            in get_query_params("develop", datetime.now())['since']
         )
 
     def test_query_ref_name(self):
         self.assertTrue(
-            "develop" == get_query_params("develop")['ref_name']
+            "develop" == get_query_params(
+                "develop",
+                datetime.now()
+            )['ref_name']
         )
 
     def test_api_creator(self):
@@ -79,7 +84,8 @@ class GitlabCase(unittest.TestCase):
         commits = get_commits(
             url="https://fake.url",
             branches=['develop', 'master'],
-            request=fakerequest
+            request=fakerequest,
+            since_date=datetime.now()
         )
         self.assertTrue(
             commits[0]['title'] == 'TR-8125 Отображаются не все'
