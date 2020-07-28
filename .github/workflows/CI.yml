@@ -26,12 +26,11 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest pytest-cov
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pipenv
+          pipenv install --deploy --dev
     - name: Check code style with flake8
       run: |
-        flake8 --count --show-source --statistics review tests
+        pipenv run style
     - name: Tests with check coverage
       run: |
-        pytest --cov=review --cov-fail-under 80 tests/
+        pipenv run unit

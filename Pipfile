@@ -13,6 +13,6 @@ APScheduler = "*"
 python_version = "3.8"
 
 [scripts]
-check = "bash -c \"flake8 --count --show-source --statistics review tests && pytest --cov=review --cov-fail-under 80 tests/\""
+check = "bash -c \"pipenv run style && pipenv run unit\""
 unit = "pytest --cov=review --cov-fail-under 80 tests/"
 style = "flake8 --count --show-source --statistics review tests"
