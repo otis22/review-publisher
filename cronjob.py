@@ -3,7 +3,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 import os
 
 # Main cronjob function.
-from main import cronjob, send_commits_on_review
+from main import send_commits_on_review
 
 # Create an instance of scheduler and add function.
 scheduler = BlockingScheduler(timezone='Europe/Kiev')
