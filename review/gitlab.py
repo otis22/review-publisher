@@ -33,13 +33,13 @@ def get_query_params(ref_name: str, since_date: datetime):
 
 def get_commits(url, branches, request, since_date: datetime):
     commits = []
+    id_cache = []
     for branch in branches:
         response = request(
             method="GET",
             url=url,
             params=get_query_params(branch, since_date)
         )
-        id_cache = []
         for commit in response.json():
             if commit['id'] in id_cache:
                 continue
