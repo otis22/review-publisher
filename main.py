@@ -47,5 +47,6 @@ def send_commits_on_review():
     )
     print(response_text)
 
+
 if __name__ == '__main__':
     send_commits_on_review()
