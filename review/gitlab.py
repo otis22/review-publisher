@@ -39,7 +39,11 @@ def get_commits(url, branches, request, since_date: datetime):
             url=url,
             params=get_query_params(branch, since_date)
         )
+        id_cache = []
         for commit in response.json():
+            if commit['id'] in id_cache:
+                continue
+            id_cache.append(commit['id'])
             commits.append({
                 "author_name": commit['author_name'],
                 "title": commit["title"],
