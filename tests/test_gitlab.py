@@ -92,6 +92,40 @@ class GitlabCase(unittest.TestCase):
             commits[0]['title'] == 'TR-8125 Отображаются не все'
         )
 
+    def test_get_commits_without_doubles(self):
+        fakedata = [
+            {
+                "id": "id1",
+                "short_id": "61f139a1",
+                "created_at": "2020-07-16T14:29:25.000Z",
+                "parent_ids": [
+                    "c027292c4625ec12bade975cfee08bbf476cefc1"
+                ],
+                "title": "TR-8125 Отображаются не все",
+                "message": "TR-8125 Отображаются не все",
+                "author_name": "TT",
+                "author_email": "gg@gmail.com",
+                "authored_date": "2020-07-16T14:29:25.000Z",
+                "committer_name": "TT",
+                "committer_email": "gg@gmail.com",
+                "committed_date": "2020-07-16T14:29:25.000Z"
+            }
+        ]
+
+        def fakerequest(method, url, params):
+            class Response:
+                def json(self):
+                    return fakedata
+            return Response()
+
+        commits = get_commits(
+            url="https://fake.url",
+            branches=['develop', 'master'],
+            request=fakerequest,
+            since_date=datetime.now()
+        )
+        self.assertEquals(len(commits), 1)
+
     def test_commit_url_has_url(self):
         self.assertTrue(
             "https://fake.url" in commit_url(

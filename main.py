@@ -19,6 +19,7 @@ def send_commits_on_review():
     project_path = os.environ.get("PROJECT_PATH")
     branches = os.environ.get("BRANCHES").split(',')
     stop_words = os.environ.get("COMMIT_TITLE_STOP_WORDS", "").split(",")
+    print(stop_words)
     private_token = os.environ.get("PRIVATE_TOKEN")
 
     assert len(gitlab_url) > 0
@@ -45,3 +46,7 @@ def send_commits_on_review():
         slack_channel
     )
     print(response_text)
+
+
+if __name__ == '__main__':
+    send_commits_on_review()
