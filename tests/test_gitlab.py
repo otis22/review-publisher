@@ -124,7 +124,7 @@ class GitlabCase(unittest.TestCase):
             request=fakerequest,
             since_date=datetime.now()
         )
-        self.assertEquals(len(commits), 1)
+        self.assertEqual(len(commits), 1)
 
     def test_commit_url_has_url(self):
         self.assertTrue(
