@@ -86,3 +86,28 @@ def commits_by(gitlab_url: str, private_token: str, stop_words: list):
             )
         )
     return func_get_commits_by
+
+
+def get_projects_url_by_path(gitlab_url, project_path):
+    assert "/" in project_path
+    project_name = project_path.split("/")[1]
+    return gitlab_url \
+        + 'api/v4/projects?search=' \
+        + project_name
+
+
+def get_project_id_by_path(gitlab_url, project_path, request):
+    response = request(
+        "GET",
+        get_projects_url_by_path(gitlab_url, project_path),
+        None
+    )
+    for project in response.json():
+        if project['path_with_namespace'] == project_path:
+            return project['id']
+    raise Exception("Can`t find project by path")
+
+
+def get_project_id(gitlab_url, private_token, project_path):
+    request = api_request_creator(private_token)
+    return get_project_id_by_path(gitlab_url, project_path, request)

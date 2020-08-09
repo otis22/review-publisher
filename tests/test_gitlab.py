@@ -1,7 +1,8 @@
 import unittest
 from review.gitlab import get_commits_url, get_query_params, \
     api_request_creator, commits_by, get_commits, \
-    commit_url, with_url, valid_commit
+    commit_url, with_url, valid_commit, get_project_id_by_path, \
+    get_projects_url_by_path
 from datetime import datetime
 
 
@@ -150,6 +151,68 @@ class GitlabCase(unittest.TestCase):
                 []
             )
         )
+
+    def test_get_projects_url_by_path(self):
+        test_project_path = "test/mypath"
+        self.assertTrue(
+            "mypath" in get_projects_url_by_path(
+                "http://gitlab.com",
+                test_project_path
+            )
+        )
+
+    def test_get_project_id_by_path_with_valid_path(self):
+        right_project_path = "test/rightpath"
+        fakedata = [
+            {
+                "id": 1,
+                "path_with_namespace": "test/wrongpath"
+            },
+            {
+                "id": 2,
+                "path_with_namespace": right_project_path
+            }
+        ]
+
+        def fakerequest(method, url, params):
+            class Response:
+                def json(self):
+                    return fakedata
+            return Response()
+        self.assertEqual(
+            2,
+            get_project_id_by_path(
+                "http://gitlab.com",
+                right_project_path,
+                fakerequest
+            )
+        )
+
+    def test_get_project_id_by_path_with_invalid_path(self):
+        right_project_path = "test/rightpath"
+        fakedata = [
+            {
+                "id": 1,
+                "path_with_namespace": "test/wrongpath"
+            },
+            {
+                "id": 2,
+                "path_with_namespace": "test/wrongpath2"
+            }
+        ]
+
+        def fakerequest(method, url, params):
+            class Response:
+                def json(self):
+                    return fakedata
+            return Response()
+
+        with self.assertRaises(Exception):
+            get_project_id_by_path(
+                "http://gitlab.com",
+                right_project_path,
+                fakerequest
+            )
 
 
 if __name__ == '__main__':
