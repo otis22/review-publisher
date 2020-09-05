@@ -8,6 +8,7 @@ def parse_projects_channels(projects_channels):
         )
     return result
 
+
 def parse_stop_words(stop_words):
     if stop_words != "":
         stop_words.split(",")
