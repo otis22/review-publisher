@@ -1,7 +1,7 @@
 import os
 from review.gitlab import commits_by, get_project_id
 from review.slack import send_commits
-from review.config import parse_projects_channels
+from review.config import parse_projects_channels, parse_stop_words
 from review.schedule import Schedule
 from datetime import datetime
 
@@ -19,12 +19,12 @@ def send_commits_on_review():
     projects_channels = parse_projects_channels(
         os.environ.get("PROJECTS_CHANNELS")
     )
+    assert len(projects_channels) > 0
     branches = os.environ.get("BRANCHES").split(',')
     assert len(branches) > 0
-    stop_words = os.environ.get("COMMIT_TITLE_STOP_WORDS", "").split(",")
-    if stop_words == ['']:
-        stop_words = []
-    print(stop_words)
+    stop_words = parse_stop_words(
+        os.environ.get("COMMIT_TITLE_STOP_WORDS", "")
+    )
     gitlab_url = os.environ.get("GITLAB_URL")
     assert len(gitlab_url) > 0
     slack_url = os.environ.get("SLACK_URL")
