@@ -15,13 +15,12 @@ LOCAL=1 GITLAB_URL=u PRIVATE_TOKEN=k PROJECT_PATH=r/p BRANCHES=master,develop SL
 * LOCAL=1 - Set 1 for local start, it will run job every 30 secs
 * GITLAB_URL=u - URL your gitlab 
 * PRIVATE_TOKEN=k - Your gitlab private token
-* PROJECT_PATH=r/p - Project path like vendor/project, you can see it in project properties
 * BRANCHES=master,develop - branch for scan commits
 * SLACK_URL=u - slack hook url
-* SLACK_CHANNEL=#developers - slack chanel for message
 * COMMIT_TITLE_STOP_WORDS=Merge branch, Merge tag - is not required param for filter commits by title
 * SCHEDULE_HOURS - hours for start job, is not required param, 15 by default
 * SCHEDULE_DAY_OF_WEEKS - day of week for schedule, is not required param, 'mon-fri' by default, it param for scheduler.add_job(day_of_week=) 
+* PROJECTS_CHANNELS=project/path1#slack_channel1,project/path2#slack_channel2
 
 ## Start on heroku
 1. Clone or copy repo
