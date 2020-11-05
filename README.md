@@ -3,7 +3,7 @@
 ![Build Status](https://github.com/otis22/review-publisher/workflows/CI/badge.svg)
 
 
-Heroku app for publish commit for review
+Heroku app for publish commit to slack for code review
 
 ## Inspired
 https://saqibameen.com/deploy-python-cron-job-scripts-on-heroku/
