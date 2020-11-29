@@ -8,6 +8,7 @@ class SlackCase(unittest.TestCase):
     def fake_commit(self):
         return {
             "author_name": 'author_name',
+            "project": "project/name",
             "title": "title",
             "branch": "master",
             "commit_url": "http://gitlab.com/commitid"

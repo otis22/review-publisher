@@ -83,12 +83,13 @@ def commit_url(gitlab_url, project_path, commit_id):
     return gitlab_url + '/' + project_path + '/commit/' + commit_id
 
 
-def with_url(commit, gitlab_url, project_path):
+def extra_info(commit, gitlab_url, project_path):
     commit['commit_url'] = commit_url(
         gitlab_url,
         project_path,
         commit['commit_id']
     )
+    commit['project'] = project_path
     return commit
 
 
@@ -107,7 +108,7 @@ def commits_for_branches(
         return filter(
             lambda commit: valid_commit(commit, stop_words),
             map(
-                lambda commit: with_url(commit, gitlab_url, project_path),
+                lambda commit: extra_info(commit, gitlab_url, project_path),
                 get_commits_for_branches(
                     get_commits_url(
                         gitlab_url,

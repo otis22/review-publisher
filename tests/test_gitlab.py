@@ -1,7 +1,7 @@
 import unittest
 from review.gitlab import get_commits_url, get_query_params_by_branch, \
     api_request_creator, commits_for_branches, get_commits_for_branches, \
-    commit_url, with_url, valid_commit, get_project_id_by_path, \
+    commit_url, extra_info, valid_commit, get_project_id_by_path, \
     get_projects_url_by_path, get_all_commits, unique_users_from_commit, \
     sum_total_for_user, user_rank_by_total
 from datetime import datetime
@@ -143,9 +143,21 @@ class GitlabCase(unittest.TestCase):
             )
         )
 
-    def test_commit_with_url(self):
+    def test_commit_with_extra_info_url(self):
         self.assertTrue(
-            "commit_url" in with_url(
+            "commit_url" in extra_info(
+                {
+                    "title": "some title",
+                    "commit_id": "fakeidcommit"
+                },
+                "https://fake.url",
+                "path/repo"
+            )
+        )
+
+    def test_commit_with_extra_info_path(self):
+        self.assertTrue(
+            "project" in extra_info(
                 {
                     "title": "some title",
                     "commit_id": "fakeidcommit"

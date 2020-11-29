@@ -3,8 +3,9 @@ import json
 
 
 def get_commit_text(commit):
-    return "<{} | *{}* - {}({})>".format(
+    return "<{} | *{}/{}* - {}({})>".format(
         commit['commit_url'],
+        commit['project'],
         commit['branch'],
         commit['title'],
         commit['author_name']
