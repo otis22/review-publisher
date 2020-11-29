@@ -24,21 +24,21 @@ def api_request_creator(private_token):
     return gitlab_api_request
 
 
-def get_query_params(ref_name: str, since_date: datetime):
+def get_query_params_by_branch(ref_name: str, since_date: datetime):
     return {
         "ref_name": ref_name,
         "since": since_date.strftime("%Y-%m-%d 00:00:00")
     }
 
 
-def get_commits(url, branches, request, since_date: datetime):
+def get_commits_for_branches(url, branches, request, since_date: datetime):
     commits = []
     id_cache = []
     for branch in branches:
         response = request(
             method="GET",
             url=url,
-            params=get_query_params(branch, since_date)
+            params=get_query_params_by_branch(branch, since_date)
         )
         for commit in response.json():
             if commit['id'] in id_cache:
@@ -50,6 +50,32 @@ def get_commits(url, branches, request, since_date: datetime):
                 "branch": branch,
                 "commit_id": commit['id']
             })
+    return commits
+
+
+def get_query_params_all_with_stats(since_date: datetime):
+    return {
+        "since": since_date.strftime("%Y-%m-%d 00:00:00"),
+        "all": True,
+        "with_stats": True,
+        "first_parent": True
+    }
+
+
+def get_all_commits(url, request, since_date: datetime):
+    commits = []
+    response = request(
+        method="GET",
+        url=url,
+        params=get_query_params_all_with_stats(since_date)
+    )
+    for commit in response.json():
+        commits.append({
+            "author_name": commit['author_name'],
+            "title": commit["title"],
+            "commit_id": commit['id'],
+            "total": commit.get('stats').get('total')
+        })
     return commits
 
 
@@ -70,7 +96,11 @@ def valid_commit(commit, stop_words):
     return all(map(lambda x: x not in commit['title'], stop_words))
 
 
-def commits_by(gitlab_url: str, private_token: str, stop_words: list):
+def commits_for_branches(
+        gitlab_url: str,
+        private_token: str,
+        stop_words: list
+):
     request = api_request_creator(private_token)
 
     def func_get_commits_by(project_id, project_path, branches, since_date):
@@ -78,7 +108,7 @@ def commits_by(gitlab_url: str, private_token: str, stop_words: list):
             lambda commit: valid_commit(commit, stop_words),
             map(
                 lambda commit: with_url(commit, gitlab_url, project_path),
-                get_commits(
+                get_commits_for_branches(
                     get_commits_url(
                         gitlab_url,
                         project_id
@@ -90,6 +120,38 @@ def commits_by(gitlab_url: str, private_token: str, stop_words: list):
             )
         )
     return func_get_commits_by
+
+
+def commits_for_projects(
+        gitlab_url: str,
+        private_token: str,
+        stop_words: list
+):
+    request = api_request_creator(private_token)
+
+    def func_get_commits_by_projects(projects,  since_date):
+        commits = []
+        for project_path in projects:
+            project_id = get_project_id(
+                gitlab_url,
+                private_token,
+                project_path
+            )
+            commits.extend(
+                get_all_commits(
+                    get_commits_url(
+                        gitlab_url,
+                        project_id
+                    ),
+                    request,
+                    since_date
+                )
+            )
+        return filter(
+            lambda commit: valid_commit(commit, stop_words),
+            commits
+        )
+    return func_get_commits_by_projects
 
 
 def get_projects_url_by_path(gitlab_url, project_path):
@@ -114,4 +176,44 @@ def get_project_id_by_path(gitlab_url, project_path, request):
 
 def get_project_id(gitlab_url, private_token, project_path):
     request = api_request_creator(private_token)
-    return get_project_id_by_path(gitlab_url, project_path, request)
+    return get_project_id_by_path(
+        gitlab_url,
+        project_path,
+        request
+    )
+
+
+def unique_users_from_commit(commits):
+    return set(el['author_name'] for el in commits)
+
+
+def sum_total_for_user(commits, user_name):
+    return sum(
+        map(
+            lambda commit: commit['total'],
+            filter(
+                lambda x: x['author_name'] == user_name,
+                commits
+            )
+        )
+    )
+
+
+def total_per_users(commits):
+    commits_list = list(commits)
+
+    def user_row(user_name):
+        return {
+            "author_name": user_name,
+            "total": sum_total_for_user(commits_list, user_name)
+        }
+    return map(
+        lambda user_name: user_row(user_name),
+        unique_users_from_commit(commits_list)
+    )
+
+
+def user_rank_by_total(commits):
+    not_ranked = list(total_per_users(commits))
+    not_ranked.sort(key=lambda x: x['total'], reverse=True)
+    return not_ranked

@@ -1,6 +1,6 @@
 import unittest
 from review.slack import get_commit_text, get_commit_payload, \
-    get_mrkdwn_payload, get_first_payload
+    get_mrkdwn_payload, get_first_payload, get_rank_text
 
 
 class SlackCase(unittest.TestCase):
@@ -38,6 +38,16 @@ class SlackCase(unittest.TestCase):
             "mychannel" in str(
                 get_first_payload("mychannel")
             )
+        )
+
+    def test_get_rank_text(self):
+        fake_data = [
+            {"author_name": "user1", "total": 5},
+            {"author_name": "user2", "total": 1}
+        ]
+        print(get_rank_text(fake_data))
+        self.assertTrue(
+            "1. user1 5" in get_rank_text(fake_data)
         )
 
 

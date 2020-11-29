@@ -5,11 +5,18 @@
 
 Heroku app for publish commit to slack for code review
 
-## Inspired
-https://saqibameen.com/deploy-python-cron-job-scripts-on-heroku/
-
 ## Local start 
-LOCAL=1 GITLAB_URL=u PRIVATE_TOKEN=k PROJECT_PATH=r/p BRANCHES=master,develop SLACK_URL=u SLACK_CHANNEL=#developers python cronjob.py
+
+```bash
+#for quick run
+LOCAL=1 GITLAB_URL=u PRIVATE_TOKEN=k PROJECTS_CHANNELS=repo/path1#channel1 BRANCHES=master,develop SLACK_URL=u python main.py
+```
+
+```bash
+#for test with scheduler
+LOCAL=1 GITLAB_URL=u PRIVATE_TOKEN=k PROJECTS_CHANNELS=repo/path1#channel1 BRANCHES=master,develop SLACK_URL=u python cronjob.py
+```
+
 
 ## Environments desctription
 * LOCAL=1 - Set 1 for local start, it will run job every 30 secs
