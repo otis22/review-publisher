@@ -3,7 +3,9 @@
 ![Build Status](https://github.com/otis22/review-publisher/workflows/CI/badge.svg)
 
 
-Heroku app for publish commit to slack for code review
+Heroku app for publish commits to slack from gitlab for code review.
+
+In our team all teammate must review all written code, we use slack and gitlab. We've made this stuff. 
 
 ## Local start 
 
