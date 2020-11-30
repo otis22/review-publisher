@@ -29,7 +29,7 @@ LOCAL=1 GITLAB_URL=u PRIVATE_TOKEN=k PROJECTS_CHANNELS=repo/path1#channel1 BRANC
 * COMMIT_TITLE_STOP_WORDS=Merge branch, Merge tag - is not required param for filter commits by title
 * SCHEDULE_HOURS - hours for start job, is not required param, 15 by default
 * SCHEDULE_DAY_OF_WEEKS - day of week for schedule, is not required param, 'mon-fri' by default, it param for scheduler.add_job(day_of_week=) 
-* PROJECTS_CHANNELS=project/path1#slack_channel1,project/path2#slack_channel2
+* PROJECTS_CHANNELS=project/path1#slack_channel1,project/path2#slack_channel2 where first part it is project path from gitlab adn second part it is slack channel
 
 ## Start on heroku
 1. Clone or copy repo
