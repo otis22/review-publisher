@@ -1,6 +1,6 @@
 import unittest
 from review.slack import get_commit_text, get_commit_payload, \
-    get_mrkdwn_payload, get_first_payload, get_rank_text
+    get_mrkdwn_payload, get_rank_text
 
 
 class SlackCase(unittest.TestCase):
@@ -31,13 +31,6 @@ class SlackCase(unittest.TestCase):
                     "mychannel",
                     self.fake_commit()
                 )
-            )
-        )
-
-    def test_get_first_payload(self):
-        self.assertTrue(
-            "mychannel" in str(
-                get_first_payload("mychannel")
             )
         )
 
