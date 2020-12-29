@@ -32,18 +32,20 @@ def get_commit_payload(channel, commit):
     return get_mrkdwn_payload(channel, get_commit_text(commit))
 
 
-def get_first_payload(channel):
-    return get_mrkdwn_payload(channel, "Review time!!!")
+def send_review_time(repo_path, slack_url, slack_chat):
+    data = get_mrkdwn_payload(
+        slack_chat,
+        "Review time for " + repo_path + "!!!"
+    )
+    return requests.post(
+        slack_url,
+        data=json.dumps(data),
+        headers={'Content-Type': "application/json"}
+    )
 
 
 def send_commits(commits, hook_url, channel):
     responses = []
-    response = requests.post(
-        hook_url,
-        data=json.dumps(get_first_payload(channel)),
-        headers={'Content-Type': "application/json"}
-    )
-    responses.append(response.text)
     for commit in commits:
         response = requests.post(
             hook_url,
