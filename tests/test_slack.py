@@ -44,5 +44,6 @@ class SlackCase(unittest.TestCase):
             "1. user1 5" in get_rank_text(fake_data)
         )
 
+
 if __name__ == '__main__':
     unittest.main()
