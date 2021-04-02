@@ -3,13 +3,15 @@ from review.gitlab import get_commits_url, get_query_params_by_branch, \
     api_request_creator, commits_for_branches, get_commits_for_branches, \
     commit_url, extra_info, valid_commit, get_project_id_by_path, \
     get_projects_url_by_path, get_all_commits, unique_users_from_commit, \
-    sum_total_for_user, user_rank_by_total
+    sum_total_for_user, user_rank_by_total, commits_from_all_pages
 from datetime import datetime
 
 
-def fake_request_with_data(fakedata):
+def fake_request_with_data(fakedata, fakeheaders={}):
     def fakerequest(method, url, params):
         class Response:
+            headers = fakeheaders
+
             def json(self):
                 return fakedata
 
@@ -331,6 +333,52 @@ class GitlabCase(unittest.TestCase):
             user_rank_by_total(fake_data)[0].get('author_name'),
             "High rank author"
         )
+
+    def test_commits_from_all_pages_with_two_pages(self):
+        fakedata = [
+            {
+                "id": "id1",
+                "short_id": "61f139a1",
+                "created_at": "2020-07-16T14:29:25.000Z",
+                "parent_ids": [
+                    "c027292c4625ec12bade975cfee08bbf476cefc1"
+                ],
+                "title": "TR-8125 Отображаются не все",
+                "message": "TR-8125 Отображаются не все",
+                "author_name": "TT",
+                "author_email": "gg@gmail.com",
+                "authored_date": "2020-07-16T14:29:25.000Z",
+                "committer_name": "TT",
+                "committer_email": "gg@gmail.com",
+                "committed_date": "2020-07-16T14:29:25.000Z",
+                "web_url": "https://some.gg/0f6",
+                "stats": {
+                    "additions": 6,
+                    "deletions": 6,
+                    "total": 12
+                }
+            }
+        ]
+
+        def request_with_two_pages(method, url, params):
+            if not hasattr(request_with_two_pages, "next_page"):
+                request_with_two_pages.next_page = 2
+
+            class Response:
+                headers = {
+                    'X-Next-Page': request_with_two_pages.next_page
+                }
+
+                def json(self):
+                    return fakedata
+            request_with_two_pages.next_page = None
+            return Response()
+        commits = commits_from_all_pages(
+            url="https://fake.url",
+            request=request_with_two_pages,
+            params={}
+        )
+        self.assertEqual(len(commits), 2)
 
 
 if __name__ == '__main__':

@@ -31,16 +31,35 @@ def get_query_params_by_branch(ref_name: str, since_date: datetime):
     }
 
 
+def commits_from_all_pages(url, params, request):
+    def all_commits(prev_commits, page):
+        print('page', page)
+        params['page'] = page
+        response = request(
+            method="GET",
+            url=url,
+            params=params
+        )
+        commits_list = prev_commits + response.json()
+        if response.headers.get('X-Next-Page', False):
+            return all_commits(
+                commits_list,
+                response.headers.get('X-Next-Page')
+            )
+        return commits_list
+    return all_commits([], 1)
+
+
 def get_commits_for_branches(url, branches, request, since_date: datetime):
     commits = []
     id_cache = []
     for branch in branches:
-        response = request(
-            method="GET",
+        commits_from_api = commits_from_all_pages(
+            request=request,
             url=url,
             params=get_query_params_by_branch(branch, since_date)
         )
-        for commit in response.json():
+        for commit in commits_from_api:
             if commit['id'] in id_cache:
                 continue
             id_cache.append(commit['id'])
@@ -64,12 +83,12 @@ def get_query_params_all_with_stats(since_date: datetime):
 
 def get_all_commits(url, request, since_date: datetime):
     commits = []
-    response = request(
-        method="GET",
+    commits_from_api = commits_from_all_pages(
+        request=request,
         url=url,
         params=get_query_params_all_with_stats(since_date)
     )
-    for commit in response.json():
+    for commit in commits_from_api:
         commits.append({
             "author_name": commit['author_name'],
             "title": commit["title"],
