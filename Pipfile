@@ -13,7 +13,7 @@ pytest = "*"
 pytest-cov = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"
 
 [scripts]
 check = "bash -c \"pipenv run style && pipenv run unit\""
