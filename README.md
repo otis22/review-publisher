@@ -48,5 +48,5 @@ pipenv install --deploy --dev
 
 Run tests
 ```bash
-pipenv run check
+make all
 ```
