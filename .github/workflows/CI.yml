@@ -27,7 +27,7 @@ jobs:
           pipenv run flake8 --version
     - name: Check code style with flake8
       run: |
-        flake8 --count --show-source --statistics review tests main.py cronjob.py
+        pipenv run flake8 --count --show-source --statistics review tests main.py cronjob.py
     - name: Tests with check coverage
       run: |
-        pytest --cov=review --cov-fail-under 80 tests/
+        pipenv run pytest --cov=review --cov-fail-under 80 tests/
