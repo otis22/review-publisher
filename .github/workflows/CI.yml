@@ -22,7 +22,9 @@ jobs:
     - name: Install dependencies
       run: |
           pip install pipenv
-          pipenv install --deploy --dev
+          pipenv install --skip-lock
+          pipenv install --dev --skip-lock
+          pipenv run flake8 --version
     - name: Check code style with flake8
       run: |
         flake8 --count --show-source --statistics review tests main.py cronjob.py
