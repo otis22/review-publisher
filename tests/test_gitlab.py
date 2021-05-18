@@ -3,7 +3,8 @@ from review.gitlab import get_commits_url, get_query_params_by_branch, \
     api_request_creator, commits_for_branches, get_commits_for_branches, \
     commit_url, extra_info, valid_commit, get_project_id_by_path, \
     get_projects_url_by_path, get_all_commits, unique_users_from_commit, \
-    sum_total_for_user, user_rank_by_total, commits_from_all_pages
+    sum_total_for_user, user_rank_by_total, commits_from_all_pages, \
+    formated_repo_info
 from datetime import datetime
 
 
@@ -332,6 +333,19 @@ class GitlabCase(unittest.TestCase):
         self.assertEqual(
             user_rank_by_total(fake_data)[0].get('author_name'),
             "High rank author"
+        )
+
+    def test_formated_repo_info(self):
+        fake = {
+            "path_with_namespace": "test/test",
+            "statistics": {
+                "repository_size": 600131502,
+                "wiki_size": 1237319
+            }
+        }
+        self.assertEqual(
+            formated_repo_info(fake),
+            "test/test(Size: 572.3MiB, Wiki Size: 1.2MiB)!"
         )
 
     def test_commits_from_all_pages_with_two_pages(self):

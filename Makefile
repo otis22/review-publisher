@@ -6,6 +6,4 @@ style:
 
 all: unit style
 
-
-
 .PHONY: style unit all

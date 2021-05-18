@@ -1,6 +1,6 @@
 import os
 from review.gitlab import commits_for_branches, get_project_id, \
-    commits_for_projects, user_rank_by_total
+    commits_for_projects, user_rank_by_total, repo_info
 from review.slack import send_commits, send_user_rank, send_review_time
 from review.config import parse_projects_channels, parse_stop_words, \
     projects_by_channel
@@ -50,7 +50,11 @@ def send_commits_on_review():
         schedule = create_schedule_by_settings()
 
         response_review_time = send_review_time(
-            project_path,
+            repo_info(
+                project_id=project_id,
+                gitlab_url=gitlab_url,
+                private_token=private_token
+            ),
             slack_url,
             slack_channel
         )
