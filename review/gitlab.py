@@ -29,7 +29,7 @@ def api_request_creator(private_token):
 def get_query_params_by_branch(ref_name: str, since_date: datetime):
     return {
         "ref_name": ref_name,
-        "since": since_date.strftime("%Y-%m-%d 00:00:00")
+        "since": since_date.isoformat()
     }
 
 
@@ -77,7 +77,7 @@ def get_commits_for_branches(url, branches, request, since_date: datetime):
 
 def get_query_params_all_with_stats(since_date: datetime):
     return {
-        "since": since_date.strftime("%Y-%m-%d 00:00:00"),
+        "since": since_date.isoformat(),
         "all": True,
         "with_stats": True,
         "first_parent": True

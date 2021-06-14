@@ -6,8 +6,9 @@ import os
 from main import main_job, \
     create_schedule_by_settings
 
+timezone = os.environ.get('TIMEZONE', 'Europe/Kiev')
 # Create an instance of scheduler and add function.
-scheduler = BlockingScheduler(timezone='Europe/Kiev')
+scheduler = BlockingScheduler(timezone=timezone)
 
 if os.environ.get("LOCAL", 0) == 0:
     schedule = create_schedule_by_settings()
