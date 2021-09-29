@@ -72,7 +72,39 @@ def get_commits_for_branches(url, branches, request, since_date: datetime):
                 "branch": branch,
                 "commit_id": commit['id']
             })
-    return commits
+    noname_branch_commit, id_cache = get_commits_for_noname_branch(
+        url,
+        request,
+        since_date,
+        id_cache
+    )
+    return commits + noname_branch_commit
+
+
+def get_commits_for_noname_branch(
+        url: str,
+        request,
+        since_date: datetime,
+        exclude_commit_ids: list
+):
+    commits = []
+    commits_from_api = commits_from_all_pages(
+        request=request,
+        url=url,
+        params=get_query_params_all_with_stats(since_date)
+    )
+    for commit in commits_from_api:
+        if commit['id'] in exclude_commit_ids:
+            continue
+        exclude_commit_ids.append(commit['id'])
+        commits.append({
+            "author_name": commit['author_name'],
+            "title": commit["title"],
+            "branch": 'noname',
+            "commit_id": commit['id']
+        })
+
+    return commits, exclude_commit_ids
 
 
 def get_query_params_all_with_stats(since_date: datetime):
