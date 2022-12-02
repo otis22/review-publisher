@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 requests = "*"
 APScheduler = "*"
+backports.zoneinfo = "*"
 
 [dev-packages]
 flake8 = "*"
