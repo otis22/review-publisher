@@ -37,6 +37,16 @@ LOCAL=1 GITLAB_URL=u PRIVATE_TOKEN=k PROJECTS_CHANNELS=repo/path1#channel1 BRANC
 1. Change schedule in cronjob.py in line scheduler.add_job(send_commits_on_review, 'cron', day_of_week='mon-fri', hour=15, minute="0")
 1. By default bot get commits from 00:00 today date if you want change it make changes in function get_query_params from gitlab.py
 
+## Start by CRON
+
+1. Clone or copy repo
+2. Copy .env.example to .env
+3. Put command to cron 
+
+```bash
+source .env && export BRANCHES COMMIT_TITLE_STOP_WORDS GITLAB_URL PRIVATE_TOKEN PROJECTS_CHANNELS SLACK_URL TIMEZONE && python main.py
+```
+
 ## For developers 
 
 Install 

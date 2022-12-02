@@ -42,7 +42,6 @@ def send_commits_on_review():
 
     for conf in projects_channels:
         project_path = conf['project_path']
-
         project_id = get_project_id(gitlab_url, private_token, project_path)
         get_commits = commits_for_branches(
             gitlab_url,
