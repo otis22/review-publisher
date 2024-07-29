@@ -1,6 +1,7 @@
 import unittest
 import datetime
 from review.schedule import Schedule
+from zoneinfo import ZoneInfo
 
 
 class ScheduleCase(unittest.TestCase):
@@ -35,6 +36,21 @@ class ScheduleCase(unittest.TestCase):
         self.assertEqual(
             schedule.since_date(monday).strftime('%A'),
             'Sunday'
+        )
+
+    def test_since_time_datails(self):
+        monday = datetime.datetime(2020, 7, 27)
+        schedule = Schedule('mon-fri', 15)
+        self.assertEqual(
+            schedule.since_date(monday).strftime('%H:%M:%S'),
+            '15:00:00'
+        )
+
+    def test_since_time_check_timezone_plus_exists(self):
+        monday = datetime.datetime(2020, 7, 27, tzinfo=ZoneInfo('Europe/Kiev'))
+        schedule = Schedule('mon-fri', 15)
+        self.assertTrue(
+            '+' in schedule.since_date(monday).isoformat()
         )
 
 

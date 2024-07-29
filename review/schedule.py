@@ -34,7 +34,11 @@ class Schedule:
             since_date = friday_from_monday(now)
         else:
             since_date = yesterday(now)
-        return since_date.replace(hour=self.hours(), minute=self.minutes())
+        return since_date.replace(
+            hour=self.hours(),
+            minute=self.minutes(),
+            second=0
+        )
 
     def every_week_day(self):
         return self.day_of_week() == 'mon-fri'

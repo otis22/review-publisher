@@ -1,17 +1,23 @@
 import os
 from review.gitlab import commits_for_branches, get_project_id, \
-    commits_for_projects, user_rank_by_total
+    commits_for_projects, user_rank_by_total, repo_info
 from review.slack import send_commits, send_user_rank, send_review_time
 from review.config import parse_projects_channels, parse_stop_words, \
     projects_by_channel
 from review.schedule import Schedule
 from datetime import datetime
+from backports.zoneinfo import ZoneInfo
 
 
 def create_schedule_by_settings() -> Schedule:
     hours = os.environ.get('SCHEDULE_HOURS', 15)
     day_of_weeks = os.environ.get('SCHEDULE_DAY_OF_WEEKS', 'mon-fri')
     return Schedule(day_of_weeks, hours)
+
+
+def now_with_timezone() -> datetime:
+    timezone = os.environ.get('TIMEZONE', 'Europe/Kiev')
+    return datetime.now(tz=ZoneInfo(timezone))
 
 
 def send_commits_on_review():
@@ -36,7 +42,6 @@ def send_commits_on_review():
 
     for conf in projects_channels:
         project_path = conf['project_path']
-
         project_id = get_project_id(gitlab_url, private_token, project_path)
         get_commits = commits_for_branches(
             gitlab_url,
@@ -50,7 +55,11 @@ def send_commits_on_review():
         schedule = create_schedule_by_settings()
 
         response_review_time = send_review_time(
-            project_path,
+            repo_info(
+                project_id=project_id,
+                gitlab_url=gitlab_url,
+                private_token=private_token
+            ),
             slack_url,
             slack_channel
         )
@@ -62,7 +71,7 @@ def send_commits_on_review():
                 project_id=project_id,
                 branches=branches,
                 project_path=project_path,
-                since_date=schedule.since_date(datetime.now())
+                since_date=schedule.since_date(now_with_timezone())
             ),
             slack_url,
             slack_channel
@@ -102,7 +111,7 @@ def send_users_rank_by_gitlab_stats():
         rank = user_rank_by_total(
             get_commits(
                 channels_with_projects.get(channel_name),
-                schedule.since_date(datetime.now())
+                schedule.since_date(now_with_timezone())
             )
         )
         print(
