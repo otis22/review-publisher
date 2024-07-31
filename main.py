@@ -1,7 +1,7 @@
 import os
 from review.gitlab import commits_for_branches, get_project_id, \
     commits_for_projects, user_rank_by_total, repo_info
-from review.slack import send_commits, send_user_rank, send_review_time
+from review.cliq import send_commits, send_user_rank, send_review_time
 from review.config import parse_projects_channels, parse_stop_words, \
     projects_by_channel
 from review.schedule import Schedule
@@ -20,9 +20,15 @@ def now_with_timezone() -> datetime:
     return datetime.now(tz=ZoneInfo(timezone))
 
 
+def get_cliq_url(channel_name: str) -> str:
+    company_id = os.environ.get('CLIQ_COMPANY')
+    zapikey = os.environ.get('CLIQ_TOKEN')
+    return f"https://cliq.zoho.com/company/{company_id}/api/v2/channelsbyname/{channel_name}/message?zapikey={zapikey}"
+
+
 def send_commits_on_review():
     """
-        Job for sending commits from gitlab in slack channel.
+        Job for sending commits from gitlab in Zoho Cliq channel.
     """
     projects_channels = parse_projects_channels(
         os.environ.get("PROJECTS_CHANNELS")
@@ -35,8 +41,6 @@ def send_commits_on_review():
     )
     gitlab_url = os.environ.get("GITLAB_URL")
     assert len(gitlab_url) > 0
-    slack_url = os.environ.get("SLACK_URL")
-    assert len(slack_url) > 0
     private_token = os.environ.get("PRIVATE_TOKEN")
     assert len(private_token) > 0
 
@@ -48,11 +52,14 @@ def send_commits_on_review():
             private_token,
             stop_words
         )
-        slack_channel = conf['slack_channel']
-        print(slack_channel)
-        assert len(slack_channel) > 0
+        cliq_channel = conf['cliq_channel']
+        print(cliq_channel)
+        assert len(cliq_channel) > 0
 
         schedule = create_schedule_by_settings()
+
+        cliq_url = get_cliq_url(cliq_channel)
+        print(cliq_url)
 
         response_review_time = send_review_time(
             repo_info(
@@ -60,8 +67,8 @@ def send_commits_on_review():
                 gitlab_url=gitlab_url,
                 private_token=private_token
             ),
-            slack_url,
-            slack_channel
+            cliq_url,
+            cliq_channel
         )
 
         print(response_review_time)
@@ -73,18 +80,16 @@ def send_commits_on_review():
                 project_path=project_path,
                 since_date=schedule.since_date(now_with_timezone())
             ),
-            slack_url,
-            slack_channel
+            cliq_url,
+            cliq_channel
         )
         print(response_text)
 
 
 def send_users_rank_by_gitlab_stats():
     """
-        Job for sending users rank by gitlab stats to slack channel.
-        Job will found projects for every channel and create rank per channel.
-            #for channel_name in channels_with_projects:
-    #    channel_commits = []
+        Job for sending users rank by gitlab stats to Zoho Cliq channel.
+        Job will find projects for every channel and create rank per channel.
     """
     projects_channels = parse_projects_channels(
         os.environ.get("PROJECTS_CHANNELS")
@@ -95,8 +100,6 @@ def send_users_rank_by_gitlab_stats():
     )
     gitlab_url = os.environ.get("GITLAB_URL")
     assert len(gitlab_url) > 0
-    slack_url = os.environ.get("SLACK_URL")
-    assert len(slack_url) > 0
     private_token = os.environ.get("PRIVATE_TOKEN")
     assert len(private_token) > 0
 
@@ -114,8 +117,10 @@ def send_users_rank_by_gitlab_stats():
                 schedule.since_date(now_with_timezone())
             )
         )
+        cliq_url = get_cliq_url(channel_name)
+        print(cliq_url)
         print(
-            send_user_rank(rank, slack_url, channel_name)
+            send_user_rank(rank, cliq_url, channel_name)
         )
 
 
