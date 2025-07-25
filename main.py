@@ -6,7 +6,7 @@ from review.config import parse_projects_channels, parse_stop_words, \
     projects_by_channel
 from review.schedule import Schedule
 from datetime import datetime
-from backports.zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo
 
 
 def create_schedule_by_settings() -> Schedule:
