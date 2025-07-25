@@ -67,8 +67,7 @@ def send_commits_on_review():
                 gitlab_url=gitlab_url,
                 private_token=private_token
             ),
-            cliq_url,
-            cliq_channel
+            cliq_url
         )
 
         print(response_review_time)
@@ -80,8 +79,7 @@ def send_commits_on_review():
                 project_path=project_path,
                 since_date=schedule.since_date(now_with_timezone())
             ),
-            cliq_url,
-            cliq_channel
+            cliq_url
         )
         print(response_text)
 
@@ -119,9 +117,7 @@ def send_users_rank_by_gitlab_stats():
         )
         cliq_url = get_cliq_url(channel_name)
         print(cliq_url)
-        print(
-            send_user_rank(rank, cliq_url, channel_name)
-        )
+        print(send_user_rank(rank, cliq_url))
 
 
 def main_job():

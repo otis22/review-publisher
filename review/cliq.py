@@ -12,7 +12,7 @@ def get_commit_text(commit):
     )
 
 
-def get_cliq_payload(channel, text):
+def get_cliq_payload(text):
     return {
         "text": text,
         "bot": {
@@ -25,15 +25,12 @@ def get_cliq_payload(channel, text):
     }
 
 
-def get_commit_payload(channel, commit):
-    return get_cliq_payload(channel, get_commit_text(commit))
+def get_commit_payload(commit):
+    return get_cliq_payload(get_commit_text(commit))
 
 
-def send_review_time(repo_info, cliq_url, cliq_chat):
-    data = get_cliq_payload(
-        cliq_chat,
-        "Review time for " + repo_info
-    )
+def send_review_time(repo_info, cliq_url):
+    data = get_cliq_payload("Review time for " + repo_info)
     return requests.post(
         cliq_url,
         data=json.dumps(data),
@@ -65,19 +62,16 @@ def get_rank_text(rank):
     )
 
 
-def get_user_rank_payload(channel, rank):
-    return get_cliq_payload(
-        channel,
-        get_rank_text(rank)
-    )
+def get_user_rank_payload(rank):
+    return get_cliq_payload(get_rank_text(rank))
 
 
-def send_commits(commits, hook_url, channel):
+def send_commits(commits, hook_url):
     responses = []
     for commit in commits:
         response = requests.post(
             hook_url,
-            data=json.dumps(get_commit_payload(channel, commit)),
+            data=json.dumps(get_commit_payload(commit)),
             headers={'Content-Type': "application/json"}
         )
         responses.append(response.text)
@@ -85,11 +79,11 @@ def send_commits(commits, hook_url, channel):
     return "\n".join(responses)
 
 
-def send_user_rank(rank, hook_url, channel):
+def send_user_rank(rank, hook_url):
     response = requests.post(
         hook_url,
         data=json.dumps(
-            get_user_rank_payload(channel, rank)
+            get_user_rank_payload(rank)
         ),
         headers={'Content-Type': "application/json"}
     )
