@@ -3,7 +3,7 @@ import json
 
 
 def get_commit_text(commit):
-    return "{} - {} / {} ({} by {})".format(
+    return "{} - [{} / {}]({}) _by {}_".format(
         commit['title'],
         commit['project'],
         commit['branch'],
@@ -18,9 +18,6 @@ def get_cliq_payload(text):
         "bot": {
             "name": "reviewbot",
             "image": "https://www.zoho.com/cliq/help/restapi/images/bot-custom.png"
-        },
-        "card": {
-            "theme": "modern-inline"
         }
     }
 

@@ -67,7 +67,7 @@ def send_commits_on_review():
         cliq_url = get_cliq_url(cliq_channel)
         print(cliq_url)
         if not cliq_url in repo_info_messages:
-            repo_info_messages[cliq_url] = "Review time for:\n"
+            repo_info_messages[cliq_url] = "---\n### Review time for:\n---\n"
         commits = list(get_commits(
             project_id=project_id,
             branches=branches,
@@ -76,12 +76,12 @@ def send_commits_on_review():
         ))
         if len(commits) == 0:
             continue
-        repo_info_messages[cliq_url] += repo_info(
+        repo_info_messages[cliq_url] += "*" + repo_info(
             project_id=project_id,
             gitlab_url=gitlab_url,
             private_token=private_token
-        ) + "\n"
-        repo_info_messages[cliq_url] += "\n".join([get_commit_text(commit) for commit in commits]) + "\n"
+        ) + "*\n\n"
+        repo_info_messages[cliq_url] += "\n".join([get_commit_text(commit) for commit in commits]) + "\n\n"
 
 
     for cliq_url, repo_info_message in repo_info_messages.items():
@@ -118,12 +118,15 @@ def send_users_rank_by_gitlab_stats():
     )
     for channel_name in channels_with_projects:
         schedule = create_schedule_by_settings()
-        rank = user_rank_by_total(
-            get_commits(
-                channels_with_projects.get(channel_name),
-                schedule.since_date(now_with_timezone())
+        try:
+            rank = user_rank_by_total(
+                get_commits(
+                    channels_with_projects.get(channel_name),
+                    schedule.since_date(now_with_timezone())
+                )
             )
-        )
+        except MissingProjectError:
+            continue
         cliq_url = get_cliq_url(channel_name)
         print(cliq_url)
         print(send_user_rank(rank, cliq_url))
