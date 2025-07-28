@@ -44,6 +44,7 @@ def send_commits_on_review():
     private_token = os.environ.get("PRIVATE_TOKEN")
     assert len(private_token) > 0
 
+    repo_info_messages = {}
     for conf in projects_channels:
         project_path = conf['project_path']
         project_id = get_project_id(gitlab_url, private_token, project_path)
@@ -60,25 +61,32 @@ def send_commits_on_review():
 
         cliq_url = get_cliq_url(cliq_channel)
         print(cliq_url)
-
-        response_review_time = send_review_time(
+        if not cliq_url in repo_info_messages:
+            repo_info_messages[cliq_url] = {"text": [], "commits": []}
+        repo_info_messages[cliq_url]["text"].append(
             repo_info(
                 project_id=project_id,
                 gitlab_url=gitlab_url,
                 private_token=private_token
-            ),
-            cliq_url
+            )
+        )
+        repo_info_messages[cliq_url]["commits"] += get_commits(
+            project_id=project_id,
+            branches=branches,
+            project_path=project_path,
+            since_date=schedule.since_date(now_with_timezone())
         )
 
+
+    for cliq_url, repo_info_message in repo_info_messages.items():
+        response_review_time = send_review_time(
+            "\n".join(repo_info_message["text"]),
+            cliq_url
+        )
         print(response_review_time)
 
         response_text = send_commits(
-            get_commits(
-                project_id=project_id,
-                branches=branches,
-                project_path=project_path,
-                since_date=schedule.since_date(now_with_timezone())
-            ),
+            "\n".join(repo_info_message["commits"]),
             cliq_url
         )
         print(response_text)
@@ -122,7 +130,7 @@ def send_users_rank_by_gitlab_stats():
 
 def main_job():
     send_commits_on_review()
-    send_users_rank_by_gitlab_stats()
+    # send_users_rank_by_gitlab_stats()
 
 
 if __name__ == '__main__':
