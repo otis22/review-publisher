@@ -3,7 +3,7 @@ import os
 from exceptions import MissingProjectError
 from review.gitlab import commits_for_branches, get_project_id, \
     commits_for_projects, user_rank_by_total, repo_info
-from review.cliq import send_commits, send_user_rank, send_review_time
+from review.cliq import send_user_rank, send_review_time, get_commit_text
 from review.config import parse_projects_channels, parse_stop_words, \
     projects_by_channel
 from review.schedule import Schedule
@@ -67,31 +67,28 @@ def send_commits_on_review():
         cliq_url = get_cliq_url(cliq_channel)
         print(cliq_url)
         if not cliq_url in repo_info_messages:
-            repo_info_messages[cliq_url] = {"text": [], "commits": []}
-        repo_info_messages[cliq_url]["text"].append(
-            repo_info(
-                project_id=project_id,
-                gitlab_url=gitlab_url,
-                private_token=private_token
-            )
-        )
-        repo_info_messages[cliq_url]["commits"] += get_commits(
+            repo_info_messages[cliq_url] = []
+        commits = list(get_commits(
             project_id=project_id,
             branches=branches,
             project_path=project_path,
             since_date=schedule.since_date(now_with_timezone())
-        )
+        ))
+        if len(commits) == 0:
+            continue
+        repo_info_messages[cliq_url].append(
+            repo_info(
+                project_id=project_id,
+                gitlab_url=gitlab_url,
+                private_token=private_token
+            ) + "\n" + "\n".join([get_commit_text(commit) for commit in commits]))
 
 
     for cliq_url, repo_info_message in repo_info_messages.items():
-        response_review_time = send_review_time(
-            "\n".join(repo_info_message["text"]),
-            cliq_url
-        )
-        print(response_review_time)
-
-        response_text = send_commits(
-            repo_info_message["commits"],
+        if len(repo_info_message) == 0:
+            continue
+        response_text = send_review_time(
+            "\n".join(repo_info_message),
             cliq_url
         )
         print(response_text)
@@ -135,7 +132,7 @@ def send_users_rank_by_gitlab_stats():
 
 def main_job():
     send_commits_on_review()
-    # send_users_rank_by_gitlab_stats()
+    send_users_rank_by_gitlab_stats()
 
 
 if __name__ == '__main__':
