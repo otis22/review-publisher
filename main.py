@@ -67,7 +67,7 @@ def send_commits_on_review():
         cliq_url = get_cliq_url(cliq_channel)
         print(cliq_url)
         if not cliq_url in repo_info_messages:
-            repo_info_messages[cliq_url] = []
+            repo_info_messages[cliq_url] = "Review time for:\n"
         commits = list(get_commits(
             project_id=project_id,
             branches=branches,
@@ -76,22 +76,21 @@ def send_commits_on_review():
         ))
         if len(commits) == 0:
             continue
-        repo_info_messages[cliq_url].append(
-            repo_info(
-                project_id=project_id,
-                gitlab_url=gitlab_url,
-                private_token=private_token
-            ) + "\n" + "\n".join([get_commit_text(commit) for commit in commits]))
+        repo_info_messages[cliq_url] += repo_info(
+            project_id=project_id,
+            gitlab_url=gitlab_url,
+            private_token=private_token
+        ) + "\n"
+        repo_info_messages[cliq_url] += "\n".join([get_commit_text(commit) for commit in commits]) + "\n"
 
 
     for cliq_url, repo_info_message in repo_info_messages.items():
-        if len(repo_info_message) == 0:
-            continue
-        response_text = send_review_time(
-            "\n".join(repo_info_message),
-            cliq_url
-        )
-        print(response_text)
+        for i in range(0, len(repo_info_message), 5000):
+            response_text = send_review_time(
+                repo_info_message[i:i + 5000],
+                cliq_url
+            )
+            print(response_text)
 
 
 def send_users_rank_by_gitlab_stats():

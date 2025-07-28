@@ -26,10 +26,9 @@ def get_cliq_payload(text):
 
 
 def send_review_time(repo_info, cliq_url):
-    data = get_cliq_payload("Review time for " + repo_info)
     return requests.post(
         cliq_url,
-        data=json.dumps(data),
+        data=json.dumps(get_cliq_payload(repo_info)),
         headers={'Content-Type': "application/json"}
     )
 
