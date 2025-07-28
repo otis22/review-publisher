@@ -1,4 +1,6 @@
 import os
+
+from exceptions import MissingProjectError
 from review.gitlab import commits_for_branches, get_project_id, \
     commits_for_projects, user_rank_by_total, repo_info
 from review.cliq import send_commits, send_user_rank, send_review_time
@@ -47,7 +49,10 @@ def send_commits_on_review():
     repo_info_messages = {}
     for conf in projects_channels:
         project_path = conf['project_path']
-        project_id = get_project_id(gitlab_url, private_token, project_path)
+        try:
+            project_id = get_project_id(gitlab_url, private_token, project_path)
+        except MissingProjectError:
+            continue
         get_commits = commits_for_branches(
             gitlab_url,
             private_token,
@@ -86,7 +91,7 @@ def send_commits_on_review():
         print(response_review_time)
 
         response_text = send_commits(
-            "\n".join(repo_info_message["commits"]),
+            repo_info_message["commits"],
             cliq_url
         )
         print(response_text)

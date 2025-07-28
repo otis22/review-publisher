@@ -1,5 +1,7 @@
 import requests
 from datetime import datetime
+
+from exceptions import MissingProjectError
 from .utils import filesize
 
 
@@ -228,7 +230,7 @@ def get_project_id_by_path(gitlab_url, project_path, request):
     for project in response.json():
         if project['path_with_namespace'] == project_path:
             return project['id']
-    raise Exception("Can`t find project by path")
+    raise MissingProjectError("Can`t find project by path")
 
 
 def get_project_id(gitlab_url, private_token, project_path):
