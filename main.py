@@ -85,13 +85,27 @@ def send_commits_on_review():
 
 
     for cliq_url, repo_info_message in repo_info_messages.items():
-        for i in range(0, len(repo_info_message), 5000):
-            response_text = send_review_time(
-                repo_info_message[i:i + 5000],
-                cliq_url
-            )
+        for part in split_text_by_lines(repo_info_message):
+            response_text = send_review_time(part, cliq_url)
             print(response_text)
 
+
+def split_text_by_lines(text):
+    lines = text.split("\n")
+    current_part = []
+    current_length = 0
+
+    for line in lines:
+        line_length = len(line) + 1
+        if current_length + line_length > 5000:
+            if current_part:
+                yield "\n".join(current_part)
+                current_part = []
+                current_length = 0
+        current_part.append(line)
+        current_length += line_length
+    if current_part:
+        yield "\n".join(current_part)
 
 def send_users_rank_by_gitlab_stats():
     """
