@@ -3,7 +3,7 @@ import json
 
 
 def get_commit_text(commit):
-    return "{} - {} / {} ({} by {})".format(
+    return "{} - [{} / {}]({}) _by {}_".format(
         commit['title'],
         commit['project'],
         commit['branch'],
@@ -12,31 +12,20 @@ def get_commit_text(commit):
     )
 
 
-def get_cliq_payload(channel, text):
+def get_cliq_payload(text):
     return {
         "text": text,
         "bot": {
             "name": "reviewbot",
             "image": "https://www.zoho.com/cliq/help/restapi/images/bot-custom.png"
-        },
-        "card": {
-            "theme": "modern-inline"
         }
     }
 
 
-def get_commit_payload(channel, commit):
-    return get_cliq_payload(channel, get_commit_text(commit))
-
-
-def send_review_time(repo_info, cliq_url, cliq_chat):
-    data = get_cliq_payload(
-        cliq_chat,
-        "Review time for " + repo_info
-    )
+def send_review_time(repo_info, cliq_url):
     return requests.post(
         cliq_url,
-        data=json.dumps(data),
+        data=json.dumps(get_cliq_payload(repo_info)),
         headers={'Content-Type': "application/json"}
     )
 
@@ -65,31 +54,15 @@ def get_rank_text(rank):
     )
 
 
-def get_user_rank_payload(channel, rank):
-    return get_cliq_payload(
-        channel,
-        get_rank_text(rank)
-    )
+def get_user_rank_payload(rank):
+    return get_cliq_payload(get_rank_text(rank))
 
 
-def send_commits(commits, hook_url, channel):
-    responses = []
-    for commit in commits:
-        response = requests.post(
-            hook_url,
-            data=json.dumps(get_commit_payload(channel, commit)),
-            headers={'Content-Type': "application/json"}
-        )
-        responses.append(response.text)
-
-    return "\n".join(responses)
-
-
-def send_user_rank(rank, hook_url, channel):
+def send_user_rank(rank, hook_url):
     response = requests.post(
         hook_url,
         data=json.dumps(
-            get_user_rank_payload(channel, rank)
+            get_user_rank_payload(rank)
         ),
         headers={'Content-Type': "application/json"}
     )
